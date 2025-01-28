@@ -1,0 +1,45 @@
+name: "Metabase Deployment"
+run-name: "Build & Deploy ${{ inputs.dashboard }} ${{ inputs.environment }} "
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "The deployment environment (e.g., production, staging, dev)"
+        required: true
+        default: "dev"
+        type: environment
+      version_bump_type:
+        description: "Version bump type"
+        type: choice
+        default: "patch"
+        required: false
+        options:
+        - patch
+        - minor
+        - major                
+      dashboard:
+        description: "Which dashboard are we deploying?"
+        required: true
+        type: choice
+        options:
+          - analytics
+          - charge_capture
+          - product_recognition
+        default: "analytics"
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step to check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step to display input values
+      - name: Show input values
+        run: |
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Version: ${{ github.event.inputs.version_bump_type }}"
+          echo "Require Approval: ${{ github.event.inputs.dashboard }}"
